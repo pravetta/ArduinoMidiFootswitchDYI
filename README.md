@@ -1,7 +1,7 @@
 # ArduinoMidiFootswitchDYI
-Code about MIDI Footswitch Controller 
+Code about some MIDI Footswitch Controller 
 
-
+1) MidiProgramChangeNS3_SONGUP_SONGDOWN-SCENE-CAMELOT.ino
 Arduino UNO Sketch about MIDI FootSwitch Controller to manage SONG UP/DOWN on Nord Stage 3 and to Send a Custom Control Change (CC=86) to Change Scene on Camelot PRO  composed by 5 buttons and a MIDI OUT.
 Button 2 --> SONG UP
 Button 3 --> SONG DOWN

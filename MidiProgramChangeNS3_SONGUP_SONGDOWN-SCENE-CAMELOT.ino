@@ -2,7 +2,9 @@
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 byte patchNum=0;
-byte bankNum=1;
+byte bankNum=0;
+long t = 0;
+long debounce_delay = 600; 
 // configurazione BANK per scorrimento SONG su NordStage3
 const int MAX_BANKNUM = 16;
 const int MIN_BANKNUM = 0;
@@ -25,6 +27,10 @@ void setup() {
    pinMode(6, INPUT_PULLUP);
    pinMode(13, OUTPUT);
    MIDI.begin(MIDI_CHANNEL_OMNI);
+   MIDI.sendControlChange(0,1,channel);
+   MIDI.sendControlChange(32,bankNum,channel);
+   MIDI.sendProgramChange(patchNum,channel);
+  
 }
 
 void loop() {
@@ -34,39 +40,43 @@ void loop() {
                
              // SONG UP 
             if(digitalRead(3)== LOW && bankNum <=16){
+              if ((millis() -t ) > debounce_delay){
                 if(patchNum == 120) {
                                      patchNum=0;
                                      if ( bankNum == MAX_BANKNUM ) {
                                          bankNum = 0;
                                      } else bankNum++;
+                                              
+                                     
                    MIDI.sendControlChange(0,1,channel);
                    MIDI.sendControlChange(32,bankNum,channel);
                    MIDI.sendProgramChange(patchNum,channel);
                    digitalWrite(13,HIGH);
-                   delay(200);     
-                   }
+                   
+                  }
                  patchNum=patchNum+5;    
                  MIDI.sendControlChange(0,1,channel);
                  MIDI.sendControlChange(32,bankNum,channel);
                  MIDI.sendProgramChange(patchNum,channel);
                  digitalWrite(13,HIGH);
-                 delay(200);   
+                 t = millis();                    
+              }
              }
 
              // SONG DOWN 
             if(digitalRead(2)== LOW && bankNum >=MIN_BANKNUM){
+               if ((millis() -t ) > debounce_delay){
                 if(patchNum == 0 ) {
                                      patchNum = MAX_PATCHNUM;
                                      if ( bankNum == 0 ) {
                                                           bankNum = MAX_BANKNUM;
-                                                          digitalWrite(13,HIGH);
-                                                          delay(200);        
+                                                          
                                      } else bankNum--;
                  MIDI.sendControlChange(0,1,channel);
                  MIDI.sendControlChange(32,bankNum,channel);
                  MIDI.sendProgramChange(patchNum,channel);
                  digitalWrite(13,HIGH);
-                 delay(200);
+                 
                     
             }
        
@@ -75,16 +85,17 @@ void loop() {
           MIDI.sendControlChange(32,bankNum,channel);
           MIDI.sendProgramChange(patchNum,channel);
           digitalWrite(13,HIGH);
-          delay(200);
-  
+          t = millis();                    
+             }
   }
 
   // CAMELOT CHANGE SCENE
   if(digitalRead(4)== LOW){   
-    MIDI.sendControlChange(CC_CSCENE,1,channelCPRO);
-    digitalWrite(13,HIGH);
-    delay(200);      
-    
+      if ((millis() -t ) > debounce_delay){
+           MIDI.sendControlChange(CC_CSCENE,1,channelCPRO);
+           digitalWrite(13,HIGH);
+           t = millis();      
+      }
   }
 
    // INCREASE BANK NUM on NS3
